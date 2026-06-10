@@ -1,6 +1,6 @@
 import type { Component } from 'vue'
 
-export type ToolCategory = 'encode' | 'convert' | 'format' | 'crypto'
+export type ToolCategory = 'encode' | 'convert' | 'format' | 'crypto' | 'time'
 
 export interface ToolOption {
   key: string

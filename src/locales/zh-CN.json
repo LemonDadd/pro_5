@@ -10,7 +10,8 @@
       "encode": "编解码",
       "convert": "转换",
       "format": "格式化",
-      "crypto": "加密"
+      "crypto": "加密",
+      "time": "时间与标识"
     }
   },
   "common": {
@@ -128,6 +129,73 @@
       "notBefore": "生效时间",
       "algNoneWarning": "安全警告：alg=none 表示未签名，存在安全风险！",
       "invalidToken": "无效的 JWT 令牌格式"
+    },
+    "timestamp": {
+      "name": "时间戳转换",
+      "description": "Unix 时间戳与日期时间互转，支持多时区、批量转换、相对时间显示",
+      "single": "单条转换",
+      "batch": "批量转换",
+      "currentTime": "当前时间",
+      "timezone": "时区",
+      "unixSec": "Unix 秒",
+      "unixMs": "Unix 毫秒",
+      "iso8601": "ISO 8601",
+      "localTime": "本地时间",
+      "utcTime": "UTC 时间",
+      "relativeTime": "相对时间",
+      "inputTip": "支持: Unix 秒(10位) / 毫秒(13位) / ISO8601 / 本地时间字符串",
+      "batchTip": "每行一个时间戳"
+    },
+    "cron": {
+      "name": "Cron 表达式",
+      "description": "Cron 表达式解析与人类语言解释，查看下 N 次执行时间，常用模板",
+      "parse": "解析",
+      "templates": "模板",
+      "nextExecutions": "下 {count} 次执行时间",
+      "format": "格式说明",
+      "fiveField": "5 段: 分 时 日 月 周",
+      "sixField": "6 段: 秒 分 时 日 月 周",
+      "humanReadable": "人类语言描述",
+      "invalidCron": "无效的 Cron 表达式"
+    },
+    "uuid": {
+      "name": "UUID / ULID",
+      "description": "批量生成 UUID v4 和 ULID，支持校验、大小写切换",
+      "uuid": "UUID 生成",
+      "ulid": "ULID 生成",
+      "validate": "校验",
+      "count": "数量",
+      "uppercase": "大写",
+      "valid": "有效",
+      "invalid": "无效",
+      "ulidInfo": "ULID (Universally Unique Lexicographically Sortable Identifier)",
+      "ulidInfoDesc": "26 字符，时间戳 + 随机数，可按时间排序 (lexicographic sort)",
+      "ulidFormat": "格式: TTTTTTTTTT RR (10 字符毫秒时间戳 + 16 字符随机数，使用 Crockford Base32)",
+      "uuidInfo": "UUID v4",
+      "uuidInfoDesc": "基于加密安全随机数生成，保证唯一性。格式: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+    },
+    "randomString": {
+      "name": "随机字符串",
+      "description": "生成指定长度和字符集的随机字符串，密码强度检测，熵估计",
+      "generate": "生成",
+      "strength": "强度检测",
+      "length": "长度",
+      "count": "数量",
+      "charset": "字符集",
+      "lowercase": "小写字母 (a-z)",
+      "uppercase": "大写字母 (A-Z)",
+      "numbers": "数字 (0-9)",
+      "symbols": "符号 (!@#$...)",
+      "excludeAmbiguous": "排除易混淆字符 (0, O, I, l, 1)",
+      "entropy": "熵",
+      "strengthLevel": "强度等级",
+      "passwordLength": "密码长度",
+      "suggestions": "建议",
+      "tooShort": "使用至少 12 位长度",
+      "noCaseMix": "混合大小写字母",
+      "noNumbersSymbols": "添加数字和特殊符号",
+      "strongPassword": "✅ 密码强度很好！",
+      "atLeastOneType": "请至少选择一种字符类型"
     }
   }
 }

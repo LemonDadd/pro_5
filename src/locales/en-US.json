@@ -10,7 +10,8 @@
       "encode": "Encode/Decode",
       "convert": "Convert",
       "format": "Format",
-      "crypto": "Crypto"
+      "crypto": "Crypto",
+      "time": "Time & Identity"
     }
   },
   "common": {
@@ -128,6 +129,73 @@
       "notBefore": "Not Before",
       "algNoneWarning": "Security Warning: alg=none means unsigned, security risk!",
       "invalidToken": "Invalid JWT token format"
+    },
+    "timestamp": {
+      "name": "Timestamp Converter",
+      "description": "Unix timestamp to datetime conversion, multi-timezone, batch processing, relative time",
+      "single": "Single",
+      "batch": "Batch",
+      "currentTime": "Now",
+      "timezone": "Timezone",
+      "unixSec": "Unix Seconds",
+      "unixMs": "Unix Milliseconds",
+      "iso8601": "ISO 8601",
+      "localTime": "Local Time",
+      "utcTime": "UTC Time",
+      "relativeTime": "Relative Time",
+      "inputTip": "Supports: Unix seconds (10 digits) / milliseconds (13 digits) / ISO8601 / local datetime string",
+      "batchTip": "One timestamp per line"
+    },
+    "cron": {
+      "name": "Cron Expression",
+      "description": "Cron expression parser with human-readable description, next execution times, templates",
+      "parse": "Parse",
+      "templates": "Templates",
+      "nextExecutions": "Next {count} executions",
+      "format": "Format",
+      "fiveField": "5 fields: min hour day month weekday",
+      "sixField": "6 fields: sec min hour day month weekday",
+      "humanReadable": "Human-readable",
+      "invalidCron": "Invalid Cron expression"
+    },
+    "uuid": {
+      "name": "UUID / ULID Generator",
+      "description": "Batch generate UUID v4 and ULID, with validation and case options",
+      "uuid": "UUID Generator",
+      "ulid": "ULID Generator",
+      "validate": "Validate",
+      "count": "Count",
+      "uppercase": "Uppercase",
+      "valid": "Valid",
+      "invalid": "Invalid",
+      "ulidInfo": "ULID (Universally Unique Lexicographically Sortable Identifier)",
+      "ulidInfoDesc": "26 chars, timestamp + random, sortable by time (lexicographic sort)",
+      "ulidFormat": "Format: TTTTTTTTTT RR (10 char ms timestamp + 16 char random, Crockford Base32)",
+      "uuidInfo": "UUID v4",
+      "uuidInfoDesc": "Cryptographically secure random, guaranteed unique. Format: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+    },
+    "randomString": {
+      "name": "Random String",
+      "description": "Generate random strings with custom length and charset, password strength checker",
+      "generate": "Generate",
+      "strength": "Strength Check",
+      "length": "Length",
+      "count": "Count",
+      "charset": "Character Set",
+      "lowercase": "Lowercase (a-z)",
+      "uppercase": "Uppercase (A-Z)",
+      "numbers": "Numbers (0-9)",
+      "symbols": "Symbols (!@#$...)",
+      "excludeAmbiguous": "Exclude ambiguous (0, O, I, l, 1)",
+      "entropy": "Entropy",
+      "strengthLevel": "Strength Level",
+      "passwordLength": "Password Length",
+      "suggestions": "Suggestions",
+      "tooShort": "Use at least 12 characters",
+      "noCaseMix": "Mix uppercase and lowercase letters",
+      "noNumbersSymbols": "Add numbers and special symbols",
+      "strongPassword": "✅ Excellent password strength!",
+      "atLeastOneType": "Please select at least one character type"
     }
   }
 }

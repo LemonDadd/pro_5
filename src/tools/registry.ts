@@ -5,6 +5,10 @@ import HtmlEntityTool from '@/views/tools/HtmlEntityTool.vue'
 import UnicodeTool from '@/views/tools/UnicodeTool.vue'
 import JsonTool from '@/views/tools/JsonTool.vue'
 import JwtTool from '@/views/tools/JwtTool.vue'
+import TimestampTool from '@/views/tools/TimestampTool.vue'
+import CronTool from '@/views/tools/CronTool.vue'
+import UuidTool from '@/views/tools/UuidTool.vue'
+import RandomStringTool from '@/views/tools/RandomStringTool.vue'
 
 const tools = [
   defineTool({
@@ -92,6 +96,62 @@ const tools = [
     keywords: ['jwt', 'token', '令牌', '解析', 'decode', 'json web token'],
     path: '/tool/jwt',
     component: JwtTool
+  }),
+  defineTool({
+    id: 'timestamp',
+    name: { zh: '时间戳转换', en: 'Timestamp Converter' },
+    description: {
+      zh: 'Unix 时间戳与日期时间互转，支持多时区、批量转换、相对时间显示',
+      en: 'Unix timestamp to datetime conversion, multi-timezone, batch processing, relative time'
+    },
+    icon: 'Clock',
+    category: 'time',
+    keywords: ['timestamp', '时间戳', 'unix', '日期', '时间', '时区', 'iso8601', 'datetime'],
+    path: '/tool/timestamp',
+    component: TimestampTool,
+    options: []
+  }),
+  defineTool({
+    id: 'cron',
+    name: { zh: 'Cron 表达式', en: 'Cron Expression' },
+    description: {
+      zh: 'Cron 表达式解析与人类语言解释，查看下 N 次执行时间，常用模板',
+      en: 'Cron expression parser with human-readable description, next execution times, templates'
+    },
+    icon: 'Timer',
+    category: 'time',
+    keywords: ['cron', 'crontab', '定时任务', '表达式', 'schedule', 'task'],
+    path: '/tool/cron',
+    component: CronTool,
+    options: []
+  }),
+  defineTool({
+    id: 'uuid',
+    name: { zh: 'UUID / ULID', en: 'UUID / ULID Generator' },
+    description: {
+      zh: '批量生成 UUID v4 和 ULID，支持校验、大小写切换',
+      en: 'Batch generate UUID v4 and ULID, with validation and case options'
+    },
+    icon: 'Hash',
+    category: 'time',
+    keywords: ['uuid', 'ulid', 'guid', '唯一标识符', '随机', 'id'],
+    path: '/tool/uuid',
+    component: UuidTool,
+    options: []
+  }),
+  defineTool({
+    id: 'random-string',
+    name: { zh: '随机字符串', en: 'Random String' },
+    description: {
+      zh: '生成指定长度和字符集的随机字符串，密码强度检测，熵估计',
+      en: 'Generate random strings with custom length and charset, password strength checker'
+    },
+    icon: 'Shuffle',
+    category: 'time',
+    keywords: ['random', '随机', '密码', 'password', 'string', '字符', 'generator'],
+    path: '/tool/random-string',
+    component: RandomStringTool,
+    options: []
   })
 ]
 
