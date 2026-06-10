@@ -12,13 +12,15 @@ import { textToUnicode, unicodeToText, getCodePoints, type CodePoint, type Unico
 import { useClipboard } from '@/composables/useClipboard'
 import { useToast } from '@/composables/useToast'
 import { useHistory } from '@/composables/useHistory'
+import { useToolTab } from '@/composables/useToolTab'
+import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 
 const { t } = useI18n()
 const { copy } = useClipboard()
 const { error } = useToast()
 const { addHistory } = useHistory()
 
-const activeTab = ref<'convert' | 'emoji'>('convert')
+const activeTab = useToolTab('convert') as any
 const unicodeFormat = ref<UnicodeFormat>('uXXXX')
 const inputText = ref('')
 const outputText = ref('')
@@ -86,6 +88,23 @@ function handleCopy() {
     copy(outputText.value)
   }
 }
+
+function handleRestore(item: any) {
+  inputText.value = item.input || ''
+  outputText.value = item.output || ''
+  if (item.options?.format) {
+    unicodeFormat.value = item.options.format
+  }
+  if (item.input) {
+    emojiInput.value = item.input
+  }
+}
+
+useKeyboardShortcuts({
+  onCopy: handleCopy,
+  onSwap: handleSwap,
+  onClear: handleClear
+})
 </script>
 
 <template>
@@ -107,10 +126,12 @@ function handleCopy() {
       <div v-if="activeTab === 'convert'">
         <ToolWorkspace
           class="h-full"
+          tool-id="unicode"
           layout="horizontal"
           @clear="handleClear"
           @swap="handleSwap"
           @copy="handleCopy"
+          @restore="handleRestore"
         >
           <template #input>
             <div class="h-full flex flex-col">

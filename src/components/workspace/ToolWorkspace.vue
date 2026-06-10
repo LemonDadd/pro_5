@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Copy, Trash2, ArrowRightLeft } from 'lucide-vue-next'
+import { Copy, Trash2, ArrowRightLeft, Clock } from 'lucide-vue-next'
 import Button from '@/components/ui/Button.vue'
 import { cn } from '@/utils/cn'
+import HistoryPanel from '@/components/workspace/HistoryPanel.vue'
+import type { HistoryItem } from '@/composables/useHistory'
 
 interface Props {
   title?: string
@@ -11,6 +13,8 @@ interface Props {
   showSwap?: boolean
   showClear?: boolean
   showCopy?: boolean
+  showHistory?: boolean
+  toolId?: string
   layout?: 'horizontal' | 'vertical'
   inputLabel?: string
   outputLabel?: string
@@ -21,6 +25,8 @@ const props = withDefaults(defineProps<Props>(), {
   showSwap: true,
   showClear: true,
   showCopy: true,
+  showHistory: true,
+  toolId: '',
   layout: 'horizontal',
   inputLabel: '',
   outputLabel: ''
@@ -30,9 +36,11 @@ const emit = defineEmits<{
   clear: []
   swap: []
   copy: []
+  restore: [item: HistoryItem]
 }>()
 
 const { t } = useI18n()
+const historyVisible = ref(false)
 
 const classes = computed(() => cn(
   'flex flex-col h-full',
@@ -54,6 +62,14 @@ function handleClear() {
 
 function handleSwap() {
   emit('swap')
+}
+
+function handleHistory() {
+  historyVisible.value = true
+}
+
+function handleRestore(item: HistoryItem) {
+  emit('restore', item)
 }
 </script>
 
@@ -80,6 +96,16 @@ function handleSwap() {
             {{ inputLabel || t('common.input') }}
           </span>
           <div class="flex items-center gap-1">
+            <Button
+              v-if="showHistory && toolId"
+              variant="ghost"
+              size="sm"
+              class="h-7 px-2 text-xs"
+              @click="handleHistory"
+            >
+              <Clock class="w-3.5 h-3.5 mr-1" />
+              {{ t('app.recent') }}
+            </Button>
             <Button
               v-if="showClear"
               variant="ghost"
@@ -137,5 +163,12 @@ function handleSwap() {
         </div>
       </div>
     </div>
+
+    <HistoryPanel
+      v-if="toolId"
+      :tool-id="toolId"
+      v-model:visible="historyVisible"
+      @restore="handleRestore"
+    />
   </div>
 </template>

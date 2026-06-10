@@ -15,13 +15,15 @@ import { useClipboard } from '@/composables/useClipboard'
 import { useToast } from '@/composables/useToast'
 import { useHistory } from '@/composables/useHistory'
 import { formatBytes } from '@/utils/string'
+import { useToolTab } from '@/composables/useToolTab'
+import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 
 const { t } = useI18n()
 const { copy } = useClipboard()
 const { error, success } = useToast()
 const { addHistory } = useHistory()
 
-const mode = ref<'text' | 'file'>('text')
+const mode = useToolTab('text') as any
 const inputText = ref('')
 const outputText = ref('')
 const urlSafe = ref(false)
@@ -168,15 +170,36 @@ function copyFileBase64() {
     copy(fileBase64.value)
   }
 }
+
+function handleRestore(item: any) {
+  inputText.value = item.input || ''
+  outputText.value = item.output || ''
+  if (item.options) {
+    if (typeof item.options.urlSafe === 'boolean') {
+      urlSafe.value = item.options.urlSafe
+    }
+    if (typeof item.options.mimeWrap === 'boolean') {
+      mimeWrap.value = item.options.mimeWrap
+    }
+  }
+}
+
+useKeyboardShortcuts({
+  onCopy: handleCopy,
+  onSwap: handleSwap,
+  onClear: handleClear
+})
 </script>
 
 <template>
   <ToolWorkspace
     class="h-full"
+    tool-id="base64"
     layout="horizontal"
     @clear="handleClear"
     @swap="handleSwap"
     @copy="handleCopy"
+    @restore="handleRestore"
   >
     <template #toolbar>
       <Tabs v-model="mode" class="w-full">

@@ -43,10 +43,28 @@ export function validateJson(json: string): { valid: boolean; error?: JsonError 
   } catch (e: any) {
     const error: JsonError = { message: e.message }
 
-    const match = e.message.match(/line (\d+) column (\d+)/)
+    let match = e.message.match(/line (\d+) column (\d+)/)
     if (match) {
       error.line = parseInt(match[1], 10)
       error.column = parseInt(match[2], 10)
+    }
+
+    if (!error.line) {
+      const posMatch = e.message.match(/position (\d+)/)
+      if (posMatch) {
+        const position = parseInt(posMatch[1], 10)
+        const lines = json.substring(0, position).split('\n')
+        error.line = lines.length
+        error.column = lines[lines.length - 1].length + 1
+      }
+    }
+
+    if (!error.line && e instanceof SyntaxError) {
+      const atMatch = e.message.match(/at line (\d+) column (\d+)/)
+      if (atMatch) {
+        error.line = parseInt(atMatch[1], 10)
+        error.column = parseInt(atMatch[2], 10)
+      }
     }
 
     return { valid: false, error }

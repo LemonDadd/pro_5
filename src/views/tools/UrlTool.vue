@@ -13,13 +13,15 @@ import { encodeUrl, decodeUrl, batchEncodeUrl, batchDecodeUrl, parseUrl, type Pa
 import { useClipboard } from '@/composables/useClipboard'
 import { useToast } from '@/composables/useToast'
 import { useHistory } from '@/composables/useHistory'
+import { useToolTab } from '@/composables/useToolTab'
+import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 
 const { t } = useI18n()
 const { copy } = useClipboard()
 const { error } = useToast()
 const { addHistory } = useHistory()
 
-const activeTab = ref<'encode' | 'parse'>('encode')
+const activeTab = useToolTab('encode') as any
 const batchMode = ref(false)
 const inputText = ref('')
 const outputText = ref('')
@@ -93,6 +95,23 @@ function handleCopy() {
   }
 }
 
+function handleRestore(item: any) {
+  inputText.value = item.input || ''
+  outputText.value = item.output || ''
+  if (item.options?.batch !== undefined) {
+    batchMode.value = item.options.batch
+  }
+  if (item.options?.mode === 'parse' && parsedUrl.value === null) {
+    handleParse()
+  }
+}
+
+useKeyboardShortcuts({
+  onCopy: handleCopy,
+  onSwap: handleSwap,
+  onClear: handleClear
+})
+
 const parseFields = computed(() => {
   if (!parsedUrl.value) return []
   return [
@@ -126,10 +145,12 @@ const parseFields = computed(() => {
     <div v-if="activeTab === 'encode'" class="flex-1 min-h-0">
       <ToolWorkspace
         class="h-full"
+        tool-id="url"
         layout="horizontal"
         @clear="handleClear"
         @swap="handleSwap"
         @copy="handleCopy"
+        @restore="handleRestore"
       >
         <template #input>
           <div class="h-full flex flex-col">

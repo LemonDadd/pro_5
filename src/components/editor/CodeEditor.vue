@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, onBeforeUnmount, computed } from 'vue'
-import { EditorState } from '@codemirror/state'
-import { EditorView, keymap, lineNumbers, highlightActiveLineGutter, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, highlightActiveLine } from '@codemirror/view'
+import { ref, onMounted, watch, onBeforeUnmount, computed, nextTick } from 'vue'
+import { EditorState, StateEffect, StateField } from '@codemirror/state'
+import { EditorView, keymap, lineNumbers, highlightActiveLineGutter, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, highlightActiveLine, Decoration, type DecorationSet } from '@codemirror/view'
 import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands'
 import { bracketMatching, foldGutter, foldKeymap, indentOnInput, syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language'
 import { json } from '@codemirror/lang-json'
@@ -41,6 +41,37 @@ const classes = computed(() => cn(
   'h-full overflow-hidden rounded-md border border-input bg-background',
   props.class
 ))
+
+const setErrorLineEffect = StateEffect.define<number | undefined>()
+
+const errorLineField = StateField.define<DecorationSet>({
+  create() {
+    return Decoration.none
+  },
+  update(decos, tr) {
+    for (const effect of tr.effects) {
+      if (effect.is(setErrorLineEffect)) {
+        const lineNum = effect.value
+        if (!lineNum) return Decoration.none
+        try {
+          const line = tr.state.doc.line(lineNum)
+          const lineDeco = Decoration.line({ attributes: { class: 'cm-error-line' } })
+          return Decoration.set([lineDeco.range(line.from)])
+        } catch {
+          return Decoration.none
+        }
+      }
+    }
+    return decos.map(tr.changes)
+  },
+  provide: (f) => EditorView.decorations.from(f)
+})
+
+const errorTheme = EditorView.theme({
+  '.cm-error-line': {
+    backgroundColor: 'rgba(239, 68, 68, 0.12) !important'
+  }
+})
 
 function createEditor() {
   if (!editorRef.value) return
@@ -98,7 +129,9 @@ function createEditor() {
       '.cm-gutters': {
         paddingRight: '8px'
       }
-    })
+    }),
+    errorLineField,
+    errorTheme
   ]
 
   if (props.lang === 'json') {
@@ -122,6 +155,31 @@ function createEditor() {
     state,
     parent: editorRef.value
   })
+
+  if (props.errorLine) {
+    applyErrorLine(props.errorLine)
+  }
+}
+
+function applyErrorLine(line: number | undefined) {
+  if (!editorView) return
+  editorView.dispatch({
+    effects: setErrorLineEffect.of(line)
+  })
+  if (line) {
+    try {
+      nextTick(() => {
+        if (!editorView) return
+        const lineObj = editorView.state.doc.line(line)
+        editorView.dispatch({
+          selection: { anchor: lineObj.from, head: lineObj.to },
+          effects: EditorView.scrollIntoView(lineObj.from, { y: 'center' })
+        })
+      })
+    } catch {
+      // ignore
+    }
+  }
 }
 
 function updateContent(value: string) {
@@ -140,6 +198,16 @@ function updateContent(value: string) {
 
 watch(() => props.modelValue, (newVal) => {
   updateContent(newVal)
+})
+
+watch(() => props.errorLine, (newLine) => {
+  if (newLine) {
+    nextTick(() => {
+      applyErrorLine(newLine)
+    })
+  } else {
+    applyErrorLine(undefined)
+  }
 })
 
 watch(isDark, () => {

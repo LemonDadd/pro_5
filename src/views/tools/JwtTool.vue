@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { KeyRound, AlertTriangle, Clock, Calendar, ShieldAlert } from 'lucide-vue-next'
+import { KeyRound, AlertTriangle, Calendar, ShieldAlert } from 'lucide-vue-next'
 import Tabs from '@/components/ui/Tabs.vue'
 import TabsList from '@/components/ui/TabsList.vue'
 import TabsTrigger from '@/components/ui/TabsTrigger.vue'
@@ -10,7 +10,11 @@ import CodeEditor from '@/components/editor/CodeEditor.vue'
 import { parseJwt, formatTimestamp, type ParsedJwt } from '@/tools/modules/jwt'
 import { useClipboard } from '@/composables/useClipboard'
 import { useToast } from '@/composables/useToast'
-import { useHistory } from '@/composables/useHistory'
+import { useHistory, type HistoryItem } from '@/composables/useHistory'
+import { useToolTab } from '@/composables/useToolTab'
+import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
+import HistoryPanel from '@/components/workspace/HistoryPanel.vue'
+import { Clock } from 'lucide-vue-next'
 
 const { t } = useI18n()
 const { copy } = useClipboard()
@@ -20,7 +24,8 @@ const { addHistory } = useHistory()
 const inputToken = ref('')
 const parsedJwt = ref<ParsedJwt | null>(null)
 const parseError = ref('')
-const activeTab = ref<'header' | 'payload'>('payload')
+const activeTab = useToolTab('payload') as any
+const historyVisible = ref(false)
 
 function handleParse() {
   try {
@@ -43,6 +48,31 @@ function handleClear() {
   parsedJwt.value = null
   parseError.value = ''
 }
+
+function handleRestore(item: HistoryItem) {
+  inputToken.value = item.input || ''
+  if (inputToken.value.trim()) {
+    handleParse()
+  }
+}
+
+function handleJwtCopy() {
+  if (activeTab.value === 'header') {
+    copyHeader()
+  } else {
+    copyPayload()
+  }
+}
+
+function handleJwtSwap() {
+  // JWT 不适用交换功能
+}
+
+useKeyboardShortcuts({
+  onCopy: handleJwtCopy,
+  onSwap: handleJwtSwap,
+  onClear: handleClear
+})
 
 function copyHeader() {
   if (parsedJwt.value) {
@@ -84,7 +114,13 @@ watch(inputToken, () => {
 <template>
   <div class="h-full flex flex-col">
     <div class="mb-4">
-      <label class="text-sm font-medium mb-2 block">JWT Token</label>
+      <div class="flex items-center justify-between mb-2">
+        <label class="text-sm font-medium">JWT Token</label>
+        <Button size="sm" variant="ghost" class="h-7 px-2 text-xs" @click="historyVisible = true">
+          <Clock class="w-3.5 h-3.5 mr-1" />
+          {{ t('app.recent') }}
+        </Button>
+      </div>
       <CodeEditor v-model="inputToken" lang="text" placeholder="粘贴 JWT 令牌..." class="h-28" />
       <div class="flex gap-2 mt-2">
         <Button size="sm" @click="handleParse">
@@ -213,5 +249,11 @@ watch(inputToken, () => {
         <p class="text-sm">粘贴 JWT 令牌以解析</p>
       </div>
     </div>
+
+    <HistoryPanel
+      tool-id="jwt"
+      v-model:visible="historyVisible"
+      @restore="handleRestore"
+    />
   </div>
 </template>

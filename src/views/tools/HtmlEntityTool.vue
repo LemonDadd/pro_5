@@ -14,6 +14,8 @@ import { escapeHtml, unescapeHtml } from '@/tools/modules/htmlEntity'
 import { useClipboard } from '@/composables/useClipboard'
 import { useToast } from '@/composables/useToast'
 import { useHistory } from '@/composables/useHistory'
+import { useToolTab } from '@/composables/useToolTab'
+import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 
 const { t } = useI18n()
 const { copy } = useClipboard()
@@ -23,7 +25,7 @@ const { addHistory } = useHistory()
 const inputText = ref('')
 const outputText = ref('')
 const useNamedEntities = ref(true)
-const activeTab = ref<'convert' | 'preview'>('convert')
+const activeTab = useToolTab('convert') as any
 
 const previewHtml = computed(() => {
   return unescapeHtml(outputText.value || inputText.value)
@@ -68,6 +70,20 @@ function handleCopy() {
     copy(outputText.value)
   }
 }
+
+function handleRestore(item: any) {
+  inputText.value = item.input || ''
+  outputText.value = item.output || ''
+  if (item.options?.useNamedEntities !== undefined) {
+    useNamedEntities.value = item.options.useNamedEntities
+  }
+}
+
+useKeyboardShortcuts({
+  onCopy: handleCopy,
+  onSwap: handleSwap,
+  onClear: handleClear
+})
 </script>
 
 <template>
@@ -89,10 +105,12 @@ function handleCopy() {
       <div v-if="activeTab === 'convert'">
         <ToolWorkspace
           class="h-full"
+          tool-id="html-entity"
           layout="horizontal"
           @clear="handleClear"
           @swap="handleSwap"
           @copy="handleCopy"
+          @restore="handleRestore"
         >
           <template #input>
             <div class="h-full flex flex-col">

@@ -14,13 +14,15 @@ import { formatJson, compressJson, validateJson, jsonToYaml, yamlToJson, type Js
 import { useClipboard } from '@/composables/useClipboard'
 import { useToast } from '@/composables/useToast'
 import { useHistory } from '@/composables/useHistory'
+import { useToolTab } from '@/composables/useToolTab'
+import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 
 const { t } = useI18n()
 const { copy } = useClipboard()
 const { error, success } = useToast()
 const { addHistory } = useHistory()
 
-const activeTab = ref<'json' | 'yaml'>('json')
+const activeTab = useToolTab('json') as any
 const inputText = ref('')
 const outputText = ref('')
 const sortKeys = ref(false)
@@ -110,6 +112,26 @@ function handleCopy() {
   }
 }
 
+function handleRestore(item: any) {
+  inputText.value = item.input || ''
+  outputText.value = item.output || ''
+  if (item.options?.sortKeys !== undefined) {
+    sortKeys.value = item.options.sortKeys
+  }
+  if (item.options?.escapeUnicode !== undefined) {
+    escapeUnicode.value = item.options.escapeUnicode
+  }
+  if (item.options?.indent !== undefined) {
+    indentSize.value = item.options.indent
+  }
+}
+
+useKeyboardShortcuts({
+  onCopy: handleCopy,
+  onSwap: handleSwap,
+  onClear: handleClear
+})
+
 const inputLang = computed(() => {
   return activeTab.value === 'yaml' ? 'text' : 'json'
 })
@@ -138,10 +160,12 @@ const outputLang = computed(() => {
     <div class="flex-1 min-h-0">
       <ToolWorkspace
         class="h-full"
+        tool-id="json"
         layout="horizontal"
         @clear="handleClear"
         @swap="handleSwap"
         @copy="handleCopy"
+        @restore="handleRestore"
       >
         <template #input>
           <div class="h-full flex flex-col">
@@ -198,11 +222,15 @@ const outputLang = computed(() => {
               <CodeEditor
                 v-model="inputText"
                 :lang="inputLang"
+                :errorLine="validation.error?.line"
                 placeholder="输入 JSON 或 YAML..."
               />
             </div>
 
             <p v-if="validation.error" class="mt-2 text-sm text-red-500">
+              <span v-if="validation.error.line">
+                {{ t('tools.json.errorLine', { line: validation.error.line }) }} · 
+              </span>
               {{ validation.error.message }}
             </p>
           </div>

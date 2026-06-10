@@ -5,15 +5,25 @@ interface ToastItem {
   type: 'success' | 'error' | 'warning' | 'info'
   message: string
   duration: number
+  createdAt: number
 }
 
 const toasts = ref<ToastItem[]>([])
 let toastId = 0
+const DEDUP_THRESHOLD = 300
 
 export function useToast() {
   function show(message: string, type: ToastItem['type'] = 'info', duration = 2500) {
+    const now = Date.now()
+    const existing = toasts.value.find(t => 
+      t.message === message && t.type === type && (now - t.createdAt) < DEDUP_THRESHOLD
+    )
+    if (existing) {
+      return existing.id
+    }
+    
     const id = ++toastId
-    toasts.value.push({ id, type, message, duration })
+    toasts.value.push({ id, type, message, duration, createdAt: now })
     setTimeout(() => {
       remove(id)
     }, duration)
