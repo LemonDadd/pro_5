@@ -1,0 +1,133 @@
+{
+  "app": {
+    "title": "Dev Toolbox",
+    "subtitle": "Frontend-only developer tools",
+    "searchPlaceholder": "Search tools...",
+    "recent": "Recent",
+    "favorites": "Favorites",
+    "allTools": "All Tools",
+    "categories": {
+      "encode": "Encode/Decode",
+      "convert": "Convert",
+      "format": "Format",
+      "crypto": "Crypto"
+    }
+  },
+  "common": {
+    "copy": "Copy",
+    "copied": "Copied",
+    "clear": "Clear",
+    "swap": "Swap",
+    "input": "Input",
+    "output": "Output",
+    "encode": "Encode",
+    "decode": "Decode",
+    "format": "Format",
+    "compress": "Compress",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Info",
+    "close": "Close",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "share": "Share",
+    "shareLink": "Copy Link",
+    "linkCopied": "Link copied"
+  },
+  "about": {
+    "title": "About & Privacy",
+    "privacyTitle": "Privacy Notice",
+    "privacyContent": "All computations are performed locally in your browser. We do not collect, store, or transmit any data you enter. Your input never leaves your device.",
+    "featuresTitle": "Features",
+    "feature1": "Pure frontend implementation, no backend required",
+    "feature2": "All computations done locally, data stays in browser",
+    "feature3": "Dark mode and multiple themes supported",
+    "feature4": "Keyboard shortcuts for efficiency",
+    "feature5": "History and favorites",
+    "feature6": "URL deep linking for sharing",
+    "techTitle": "Tech Stack",
+    "version": "Version"
+  },
+  "tools": {
+    "base64": {
+      "name": "Base64 Encoder/Decoder",
+      "description": "Base64 encode/decode for text and files, standard/URL-safe mode",
+      "textMode": "Text Mode",
+      "fileMode": "File Mode",
+      "urlSafe": "URL-safe mode",
+      "mimeWrap": "MIME wrap (76 chars)",
+      "dropFile": "Drop file here or click to select",
+      "fileSizeLimit": "File size limit: 5MB",
+      "download": "Download",
+      "autoDetect": "Base64 detected, decode now?",
+      "decodeNow": "Decode Now"
+    },
+    "url": {
+      "name": "URL Encoder/Decoder",
+      "description": "URL encode/decode, URL parsing and batch processing",
+      "encode": "URL Encode",
+      "decode": "URL Decode",
+      "parse": "Parse URL",
+      "batch": "Batch Mode",
+      "batchTip": "One per line for batch processing",
+      "parsedUrl": "Parsed Result",
+      "protocol": "Protocol",
+      "host": "Host",
+      "hostname": "Hostname",
+      "port": "Port",
+      "pathname": "Path",
+      "search": "Search",
+      "hash": "Hash",
+      "origin": "Origin"
+    },
+    "htmlEntity": {
+      "name": "HTML Entity Encoder/Decoder",
+      "description": "HTML entity escape/unescape with sandbox preview",
+      "escape": "Escape",
+      "unescape": "Unescape",
+      "preview": "Preview",
+      "previewWarning": "Sandbox preview (scripts disabled)"
+    },
+    "unicode": {
+      "name": "Unicode Converter",
+      "description": "Text to Unicode code points, Emoji code point lookup",
+      "toUnicode": "To Unicode",
+      "toText": "To Text",
+      "codePoints": "Code Points",
+      "emoji": "Emoji Split",
+      "unicodeFormat": "Unicode Format",
+      "uXXXX": "\\uXXXX",
+      "uXXXXXX": "\\u{XXXXXX}"
+    },
+    "json": {
+      "name": "JSON Tools",
+      "description": "JSON format, compress, validate, sort and convert",
+      "format": "Format",
+      "compress": "Compress",
+      "validate": "Validate",
+      "sortKeys": "Sort Keys",
+      "escapeUnicode": "Escape Unicode",
+      "escapeUnicodeDesc": "Escape non-ASCII chars like Chinese to \\uXXXX",
+      "toYaml": "To YAML",
+      "fromYaml": "From YAML",
+      "yaml": "YAML",
+      "valid": "Valid",
+      "invalid": "Invalid",
+      "errorLine": "Error at line {line}"
+    },
+    "jwt": {
+      "name": "JWT Parser",
+      "description": "JWT token parser, Header/Payload decode and expiry display",
+      "header": "Header",
+      "payload": "Payload",
+      "signature": "Signature",
+      "expired": "Expired",
+      "expiresAt": "Expires At",
+      "issuedAt": "Issued At",
+      "notBefore": "Not Before",
+      "algNoneWarning": "Security Warning: alg=none means unsigned, security risk!",
+      "invalidToken": "Invalid JWT token format"
+    }
+  }
+}

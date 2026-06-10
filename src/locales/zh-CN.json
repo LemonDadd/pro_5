@@ -1,0 +1,133 @@
+{
+  "app": {
+    "title": "开发者工具箱",
+    "subtitle": "纯前端工具聚合平台",
+    "searchPlaceholder": "搜索工具...",
+    "recent": "最近使用",
+    "favorites": "收藏",
+    "allTools": "全部工具",
+    "categories": {
+      "encode": "编解码",
+      "convert": "转换",
+      "format": "格式化",
+      "crypto": "加密"
+    }
+  },
+  "common": {
+    "copy": "复制",
+    "copied": "已复制",
+    "clear": "清空",
+    "swap": "交换",
+    "input": "输入",
+    "output": "输出",
+    "encode": "编码",
+    "decode": "解码",
+    "format": "格式化",
+    "compress": "压缩",
+    "error": "错误",
+    "success": "成功",
+    "warning": "警告",
+    "info": "提示",
+    "close": "关闭",
+    "cancel": "取消",
+    "confirm": "确定",
+    "share": "分享",
+    "shareLink": "复制链接",
+    "linkCopied": "链接已复制"
+  },
+  "about": {
+    "title": "关于 & 隐私",
+    "privacyTitle": "隐私说明",
+    "privacyContent": "所有计算均在您的浏览器本地完成，我们不会收集、存储或传输您输入的任何数据。您的输入内容永远不会离开您的设备。",
+    "featuresTitle": "功能特点",
+    "feature1": "纯前端实现，无需后端服务",
+    "feature2": "所有计算在本地完成，数据不出浏览器",
+    "feature3": "支持深色模式与多种主题",
+    "feature4": "快捷键操作，提升效率",
+    "feature5": "历史记录与收藏功能",
+    "feature6": "URL 深链直达，方便分享",
+    "techTitle": "技术栈",
+    "version": "版本"
+  },
+  "tools": {
+    "base64": {
+      "name": "Base64 编解码",
+      "description": "支持文本和文件的 Base64 编解码，标准/URL-safe 模式切换",
+      "textMode": "文本模式",
+      "fileMode": "文件模式",
+      "urlSafe": "URL-safe 模式",
+      "mimeWrap": "MIME 换行 (每76字符)",
+      "dropFile": "拖拽文件到此处，或点击选择",
+      "fileSizeLimit": "文件大小限制：5MB",
+      "download": "下载文件",
+      "autoDetect": "检测到 Base64 编码，是否解码？",
+      "decodeNow": "立即解码"
+    },
+    "url": {
+      "name": "URL 编解码",
+      "description": "URL 编码/解码，URL 解析与批量处理",
+      "encode": "URL 编码",
+      "decode": "URL 解码",
+      "parse": "URL 解析",
+      "batch": "批量模式",
+      "batchTip": "每行一条进行编解码",
+      "parsedUrl": "解析结果",
+      "protocol": "协议",
+      "host": "主机",
+      "hostname": "主机名",
+      "port": "端口",
+      "pathname": "路径",
+      "search": "查询参数",
+      "hash": "哈希",
+      "origin": "源地址"
+    },
+    "htmlEntity": {
+      "name": "HTML 实体编解码",
+      "description": "HTML 实体转义与反转义，沙箱预览",
+      "escape": "转义",
+      "unescape": "反转义",
+      "preview": "预览",
+      "previewWarning": "沙箱预览（脚本已禁用）"
+    },
+    "unicode": {
+      "name": "Unicode 转换",
+      "description": "文本与 Unicode 码点互转，Emoji 码点查询",
+      "toUnicode": "转 Unicode",
+      "toText": "转文本",
+      "codePoints": "码点列表",
+      "emoji": "Emoji 拆分",
+      "unicodeFormat": "Unicode 格式",
+      "uXXXX": "\\uXXXX",
+      "uXXXXXX": "\\u{XXXXXX}"
+    },
+    "json": {
+      "name": "JSON 工具",
+      "description": "JSON 格式化、压缩、校验、排序与转换",
+      "format": "格式化",
+      "compress": "压缩",
+      "validate": "校验",
+      "sortKeys": "排序键名",
+      "escapeUnicode": "转义 Unicode",
+      "escapeUnicodeDesc": "将中文等非 ASCII 字符转义为 \\uXXXX",
+      "toYaml": "转 YAML",
+      "fromYaml": "从 YAML 转换",
+      "yaml": "YAML",
+      "valid": "格式正确",
+      "invalid": "格式错误",
+      "errorLine": "错误位置：第 {line} 行"
+    },
+    "jwt": {
+      "name": "JWT 解析",
+      "description": "JWT 令牌解析，Header/Payload 解码与过期时间显示",
+      "header": "Header",
+      "payload": "Payload",
+      "signature": "Signature",
+      "expired": "已过期",
+      "expiresAt": "过期时间",
+      "issuedAt": "签发时间",
+      "notBefore": "生效时间",
+      "algNoneWarning": "安全警告：alg=none 表示未签名，存在安全风险！",
+      "invalidToken": "无效的 JWT 令牌格式"
+    }
+  }
+}
