@@ -1,15 +1,15 @@
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, type Ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-export function useToolTab(defaultTab: string) {
+export function useToolTab<T extends string = string>(defaultTab: T): Ref<T> {
   const route = useRoute()
   const router = useRouter()
-  const activeTab = ref<string>(defaultTab)
+  const activeTab = ref<T>(defaultTab) as Ref<T>
 
   onMounted(() => {
-    const queryTab = route.query.tab as string
-    if (queryTab) {
-      activeTab.value = queryTab
+    const queryTab = route.query.tab as string | undefined
+    if (queryTab && typeof queryTab === 'string') {
+      activeTab.value = queryTab as T
     }
   })
 
@@ -17,7 +17,7 @@ export function useToolTab(defaultTab: string) {
     () => route.query.tab,
     (newTab) => {
       if (newTab && typeof newTab === 'string' && newTab !== activeTab.value) {
-        activeTab.value = newTab
+        activeTab.value = newTab as T
       }
     }
   )

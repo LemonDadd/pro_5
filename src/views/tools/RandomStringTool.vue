@@ -19,7 +19,8 @@ const { copy } = useClipboard()
 const { error, success } = useToast()
 const { addHistory } = useHistory()
 
-const activeTab = useToolTab('generate') as any
+type RandomStringTab = 'generate' | 'strength'
+const activeTab = useToolTab<RandomStringTab>('generate')
 const length = ref(16)
 const count = ref(10)
 const charOptions = ref<CharSetOptions>(getDefaultCharSetOptions())

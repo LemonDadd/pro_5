@@ -24,7 +24,8 @@ const { addHistory } = useHistory()
 const inputToken = ref('')
 const parsedJwt = ref<ParsedJwt | null>(null)
 const parseError = ref('')
-const activeTab = useToolTab('payload') as any
+type JwtTab = 'payload' | 'header'
+const activeTab = useToolTab<JwtTab>('payload')
 const historyVisible = ref(false)
 
 function handleParse() {

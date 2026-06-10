@@ -23,7 +23,8 @@ const { copy } = useClipboard()
 const { error, success } = useToast()
 const { addHistory } = useHistory()
 
-const mode = useToolTab('text') as any
+type Base64Mode = 'text' | 'file'
+const mode = useToolTab<Base64Mode>('text')
 const inputText = ref('')
 const outputText = ref('')
 const urlSafe = ref(false)

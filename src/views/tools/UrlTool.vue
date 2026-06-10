@@ -21,7 +21,8 @@ const { copy } = useClipboard()
 const { error } = useToast()
 const { addHistory } = useHistory()
 
-const activeTab = useToolTab('encode') as any
+type UrlTab = 'encode' | 'decode' | 'parse'
+const activeTab = useToolTab<UrlTab>('encode')
 const batchMode = ref(false)
 const inputText = ref('')
 const outputText = ref('')

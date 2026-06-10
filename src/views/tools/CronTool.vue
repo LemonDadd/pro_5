@@ -18,7 +18,8 @@ const { copy } = useClipboard()
 const { error, success } = useToast()
 const { addHistory } = useHistory()
 
-const activeTab = useToolTab('parse') as any
+type CronTab = 'parse' | 'templates'
+const activeTab = useToolTab<CronTab>('parse')
 const inputText = ref('')
 const outputText = ref('')
 const errorMessage = ref('')

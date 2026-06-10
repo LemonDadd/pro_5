@@ -8,7 +8,7 @@ import TabsTrigger from '@/components/ui/TabsTrigger.vue'
 import Button from '@/components/ui/Button.vue'
 import CodeEditor from '@/components/editor/CodeEditor.vue'
 import ToolWorkspace from '@/components/workspace/ToolWorkspace.vue'
-import { textToUnicode, unicodeToText, getCodePoints, type CodePoint, type UnicodeFormat } from '@/tools/modules/unicode'
+import { textToUnicode, unicodeToText, getCodePoints, splitEmoji, type CodePoint, type UnicodeFormat } from '@/tools/modules/unicode'
 import { useClipboard } from '@/composables/useClipboard'
 import { useToast } from '@/composables/useToast'
 import { useHistory } from '@/composables/useHistory'
@@ -20,7 +20,8 @@ const { copy } = useClipboard()
 const { error } = useToast()
 const { addHistory } = useHistory()
 
-const activeTab = useToolTab('convert') as any
+type UnicodeTab = 'convert' | 'emoji'
+const activeTab = useToolTab<UnicodeTab>('convert')
 const unicodeFormat = ref<UnicodeFormat>('uXXXX')
 const inputText = ref('')
 const outputText = ref('')
@@ -32,20 +33,9 @@ const codePoints = computed<CodePoint[]>(() => {
   return getCodePoints(text)
 })
 
-function splitGraphemes(text: string): string[] {
-  const result: string[] = []
-  let i = 0
-  while (i < text.length) {
-    const codePoint = text.codePointAt(i)!
-    result.push(String.fromCodePoint(codePoint))
-    i += codePoint > 0xFFFF ? 2 : 1
-  }
-  return result
-}
-
 const emojiList = computed(() => {
   if (!emojiInput.value) return []
-  return splitGraphemes(emojiInput.value)
+  return splitEmoji(emojiInput.value)
 })
 
 function handleToUnicode() {

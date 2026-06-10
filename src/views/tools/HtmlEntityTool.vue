@@ -11,79 +11,66 @@ import Badge from '@/components/ui/Badge.vue'
 import CodeEditor from '@/components/editor/CodeEditor.vue'
 import ToolWorkspace from '@/components/workspace/ToolWorkspace.vue'
 import { escapeHtml, unescapeHtml } from '@/tools/modules/htmlEntity'
-import { useClipboard } from '@/composables/useClipboard'
-import { useToast } from '@/composables/useToast'
-import { useHistory } from '@/composables/useHistory'
 import { useToolTab } from '@/composables/useToolTab'
-import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
+import { useToolIO } from '@/composables/useToolIO'
+import type { HistoryItem } from '@/composables/useHistory'
+
+type HtmlEntityTab = 'convert' | 'preview'
 
 const { t } = useI18n()
-const { copy } = useClipboard()
-const { error } = useToast()
-const { addHistory } = useHistory()
-
-const inputText = ref('')
-const outputText = ref('')
+const activeTab = useToolTab<HtmlEntityTab>('convert')
 const useNamedEntities = ref(true)
-const activeTab = useToolTab('convert') as any
+
+const {
+  inputText,
+  outputText,
+  handleClear,
+  handleSwap,
+  handleCopy,
+  handleRestore: baseHandleRestore,
+  addHistory,
+  runAction
+} = useToolIO({
+  toolId: 'html-entity',
+  onRestore: (item: HistoryItem) => {
+    if (item.options?.useNamedEntities !== undefined) {
+      useNamedEntities.value = item.options.useNamedEntities
+    }
+  }
+})
 
 const previewHtml = computed(() => {
   return unescapeHtml(outputText.value || inputText.value)
 })
 
 function handleEscape() {
-  try {
-    outputText.value = escapeHtml(inputText.value, useNamedEntities.value)
-    addHistory('html-entity', inputText.value, outputText.value, {
-      mode: 'escape',
-      useNamedEntities: useNamedEntities.value
-    })
-  } catch (e: any) {
-    error(e.message)
-  }
+  runAction(
+    () => escapeHtml(inputText.value, useNamedEntities.value),
+    (result) => {
+      outputText.value = result
+      addHistory(inputText.value, result, {
+        mode: 'escape',
+        useNamedEntities: useNamedEntities.value
+      })
+    }
+  )
 }
 
 function handleUnescape() {
-  try {
-    outputText.value = unescapeHtml(inputText.value)
-    addHistory('html-entity', inputText.value, outputText.value, {
-      mode: 'unescape'
-    })
-  } catch (e: any) {
-    error(e.message)
-  }
+  runAction(
+    () => unescapeHtml(inputText.value),
+    (result) => {
+      outputText.value = result
+      addHistory(inputText.value, result, {
+        mode: 'unescape'
+      })
+    }
+  )
 }
 
-function handleClear() {
-  inputText.value = ''
-  outputText.value = ''
+function handleRestore(item: HistoryItem) {
+  baseHandleRestore(item)
 }
-
-function handleSwap() {
-  const temp = inputText.value
-  inputText.value = outputText.value
-  outputText.value = temp
-}
-
-function handleCopy() {
-  if (outputText.value) {
-    copy(outputText.value)
-  }
-}
-
-function handleRestore(item: any) {
-  inputText.value = item.input || ''
-  outputText.value = item.output || ''
-  if (item.options?.useNamedEntities !== undefined) {
-    useNamedEntities.value = item.options.useNamedEntities
-  }
-}
-
-useKeyboardShortcuts({
-  onCopy: handleCopy,
-  onSwap: handleSwap,
-  onClear: handleClear
-})
 </script>
 
 <template>

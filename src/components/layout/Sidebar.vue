@@ -17,15 +17,22 @@ const { isFavorite, toggleFavorite, getFavoriteToolIds } = useFavorites()
 const { history } = useHistory()
 
 const searchQuery = ref('')
-const expandedCategories = ref<Record<string, boolean>>({
-  encode: true,
-  convert: true,
-  format: true,
-  crypto: true
-})
+const expandedCategories = ref<Record<string, boolean>>(
+  Object.fromEntries(
+    toolRegistry.getCategories().map(cat => [cat, true])
+  )
+)
+
+function ensureCategoryExpanded(category: string) {
+  if (expandedCategories.value[category] === undefined) {
+    expandedCategories.value[category] = true
+  }
+}
 
 const categories = computed(() => {
-  return toolRegistry.getCategories()
+  const cats = toolRegistry.getCategories()
+  cats.forEach(ensureCategoryExpanded)
+  return cats
 })
 
 const toolsByCategory = computed(() => {

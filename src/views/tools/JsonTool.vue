@@ -22,7 +22,8 @@ const { copy } = useClipboard()
 const { error, success } = useToast()
 const { addHistory } = useHistory()
 
-const activeTab = useToolTab('json') as any
+type JsonTab = 'json' | 'yaml'
+const activeTab = useToolTab<JsonTab>('json')
 const inputText = ref('')
 const outputText = ref('')
 const sortKeys = ref(false)

@@ -19,7 +19,8 @@ const { copy } = useClipboard()
 const { error, success, info } = useToast()
 const { addHistory } = useHistory()
 
-const activeTab = useToolTab('uuid') as any
+type UuidTab = 'uuid' | 'ulid' | 'validate'
+const activeTab = useToolTab<UuidTab>('uuid')
 const uuidCount = ref(5)
 const uuidUppercase = ref(false)
 const ulidCount = ref(5)

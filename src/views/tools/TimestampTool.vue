@@ -18,7 +18,8 @@ const { copy } = useClipboard()
 const { error, success } = useToast()
 const { addHistory } = useHistory()
 
-const activeTab = useToolTab('single') as any
+type TimestampTab = 'single' | 'batch'
+const activeTab = useToolTab<TimestampTab>('single')
 const inputText = ref('')
 const outputText = ref('')
 const batchInput = ref('')
