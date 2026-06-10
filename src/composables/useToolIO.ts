@@ -4,6 +4,8 @@ import { useToast } from '@/composables/useToast'
 import { useHistory, type HistoryItem } from '@/composables/useHistory'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 
+export type { HistoryItem }
+
 export interface ToolIOOptions {
   toolId: string
   defaultInput?: string
@@ -27,6 +29,8 @@ export interface ToolIOReturn {
   setError: (message: string, showToast?: boolean) => void
   clearError: () => void
   runAction: <T>(fn: () => T, onSuccess?: (result: T) => void) => T | undefined
+  success: (message: string) => void
+  copy: (text: string) => void
 }
 
 export function useToolIO(options: ToolIOOptions): ToolIOReturn {
@@ -116,6 +120,8 @@ export function useToolIO(options: ToolIOOptions): ToolIOReturn {
     addHistory,
     setError,
     clearError,
-    runAction
+    runAction,
+    success,
+    copy
   }
 }

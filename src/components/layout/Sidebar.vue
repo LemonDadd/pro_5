@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter, useRoute } from 'vue-router'
 import { Search, ChevronDown, ChevronRight, Star, Clock, Wrench } from 'lucide-vue-next'
 import { useAppStore } from '@/stores/appStore'
-import { toolRegistry } from '@/tools/registry'
+import { toolRegistry, getDefaultCategoryExpanded, getCategoryDisplayOrder } from '@/tools/registry'
 import { useFavorites } from '@/composables/useFavorites'
 import { useHistory } from '@/composables/useHistory'
 import * as Icons from 'lucide-vue-next'
@@ -17,20 +17,17 @@ const { isFavorite, toggleFavorite, getFavoriteToolIds } = useFavorites()
 const { history } = useHistory()
 
 const searchQuery = ref('')
-const expandedCategories = ref<Record<string, boolean>>(
-  Object.fromEntries(
-    toolRegistry.getCategories().map(cat => [cat, true])
-  )
-)
+const expandedCategories = ref<Record<string, boolean>>(getDefaultCategoryExpanded())
 
 function ensureCategoryExpanded(category: string) {
   if (expandedCategories.value[category] === undefined) {
-    expandedCategories.value[category] = true
+    const defaults = getDefaultCategoryExpanded()
+    expandedCategories.value[category] = defaults[category] ?? true
   }
 }
 
 const categories = computed(() => {
-  const cats = toolRegistry.getCategories()
+  const cats = getCategoryDisplayOrder()
   cats.forEach(ensureCategoryExpanded)
   return cats
 })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Link, Search } from 'lucide-vue-next'
 import Tabs from '@/components/ui/Tabs.vue'
@@ -10,108 +10,106 @@ import Button from '@/components/ui/Button.vue'
 import CodeEditor from '@/components/editor/CodeEditor.vue'
 import ToolWorkspace from '@/components/workspace/ToolWorkspace.vue'
 import { encodeUrl, decodeUrl, batchEncodeUrl, batchDecodeUrl, parseUrl, type ParsedUrl } from '@/tools/modules/url'
-import { useClipboard } from '@/composables/useClipboard'
-import { useToast } from '@/composables/useToast'
-import { useHistory } from '@/composables/useHistory'
 import { useToolTab } from '@/composables/useToolTab'
-import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
+import { useToolIO, type HistoryItem } from '@/composables/useToolIO'
 
 const { t } = useI18n()
-const { copy } = useClipboard()
-const { error } = useToast()
-const { addHistory } = useHistory()
 
 type UrlTab = 'encode' | 'decode' | 'parse'
 const activeTab = useToolTab<UrlTab>('encode')
 const batchMode = ref(false)
-const inputText = ref('')
-const outputText = ref('')
-const errorMessage = ref('')
 const parsedUrl = ref<ParsedUrl | null>(null)
+
+const {
+  inputText,
+  outputText,
+  errorMessage,
+  handleClear,
+  handleSwap,
+  handleCopy,
+  handleRestore,
+  addHistory,
+  setError,
+  clearError
+} = useToolIO({
+  toolId: 'url',
+  onClear: () => {
+    parsedUrl.value = null
+  },
+  onCopy: () => {
+    if (activeTab.value === 'encode' && outputText.value) {
+      return outputText.value
+    }
+    return undefined
+  },
+  onRestore: (item: HistoryItem) => {
+    if (item.options?.batch !== undefined) {
+      batchMode.value = item.options.batch
+    }
+    if (item.options?.mode === 'parse' && parsedUrl.value === null) {
+      handleParse()
+    }
+  }
+})
 
 function handleEncode() {
   try {
-    errorMessage.value = ''
+    clearError()
     if (batchMode.value) {
       outputText.value = batchEncodeUrl(inputText.value)
     } else {
       outputText.value = encodeUrl(inputText.value)
     }
-    addHistory('url', inputText.value, outputText.value, {
+    addHistory(inputText.value, outputText.value, {
       mode: 'encode',
       batch: batchMode.value
     })
   } catch (e: any) {
-    errorMessage.value = e.message
-    error(e.message)
+    setError(e.message)
   }
 }
 
 function handleDecode() {
   try {
-    errorMessage.value = ''
+    clearError()
     if (batchMode.value) {
       outputText.value = batchDecodeUrl(inputText.value)
     } else {
       outputText.value = decodeUrl(inputText.value)
     }
-    addHistory('url', inputText.value, outputText.value, {
+    addHistory(inputText.value, outputText.value, {
       mode: 'decode',
       batch: batchMode.value
     })
   } catch (e: any) {
-    errorMessage.value = e.message
-    error(e.message)
+    setError(e.message)
   }
 }
 
 function handleParse() {
   try {
-    errorMessage.value = ''
+    clearError()
     parsedUrl.value = parseUrl(inputText.value)
   } catch (e: any) {
-    errorMessage.value = e.message
     parsedUrl.value = null
-    error(e.message)
+    setError(e.message, false)
   }
 }
 
-function handleClear() {
-  inputText.value = ''
-  outputText.value = ''
-  errorMessage.value = ''
-  parsedUrl.value = null
-}
-
-function handleSwap() {
-  const temp = inputText.value
-  inputText.value = outputText.value
-  outputText.value = temp
-  errorMessage.value = ''
-}
-
-function handleCopy() {
-  if (activeTab.value === 'encode' && outputText.value) {
-    copy(outputText.value)
+watch(
+  () => [activeTab.value, inputText.value],
+  () => {
+    if (activeTab.value === 'parse' && inputText.value.trim()) {
+      try {
+        parsedUrl.value = parseUrl(inputText.value)
+        clearError()
+      } catch (e: any) {
+        parsedUrl.value = null
+        setError(e.message, false)
+      }
+    }
   }
-}
-
-function handleRestore(item: any) {
-  inputText.value = item.input || ''
-  outputText.value = item.output || ''
-  if (item.options?.batch !== undefined) {
-    batchMode.value = item.options.batch
-  }
-  if (item.options?.mode === 'parse' && parsedUrl.value === null) {
-    handleParse()
-  }
-}
-
-useKeyboardShortcuts({
-  onCopy: handleCopy,
-  onSwap: handleSwap,
-  onClear: handleClear
-})
+)
 
 const parseFields = computed(() => {
   if (!parsedUrl.value) return []

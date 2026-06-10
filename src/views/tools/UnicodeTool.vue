@@ -9,23 +9,46 @@ import Button from '@/components/ui/Button.vue'
 import CodeEditor from '@/components/editor/CodeEditor.vue'
 import ToolWorkspace from '@/components/workspace/ToolWorkspace.vue'
 import { textToUnicode, unicodeToText, getCodePoints, splitEmoji, type CodePoint, type UnicodeFormat } from '@/tools/modules/unicode'
-import { useClipboard } from '@/composables/useClipboard'
-import { useToast } from '@/composables/useToast'
-import { useHistory } from '@/composables/useHistory'
+import { useToolIO, type HistoryItem } from '@/composables/useToolIO'
 import { useToolTab } from '@/composables/useToolTab'
-import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 
 const { t } = useI18n()
-const { copy } = useClipboard()
-const { error } = useToast()
-const { addHistory } = useHistory()
 
 type UnicodeTab = 'convert' | 'emoji'
 const activeTab = useToolTab<UnicodeTab>('convert')
 const unicodeFormat = ref<UnicodeFormat>('uXXXX')
-const inputText = ref('')
-const outputText = ref('')
 const emojiInput = ref('')
+
+const {
+  inputText,
+  outputText,
+  handleClear,
+  handleSwap,
+  handleCopy,
+  handleRestore,
+  addHistory,
+  runAction,
+  copy
+} = useToolIO({
+  toolId: 'unicode',
+  onClear: () => {
+    emojiInput.value = ''
+  },
+  onCopy: () => {
+    if (activeTab.value === 'convert' && outputText.value) {
+      return outputText.value
+    }
+    return undefined
+  },
+  onRestore: (item: HistoryItem) => {
+    if (item.options?.format) {
+      unicodeFormat.value = item.options.format
+    }
+    if (item.input) {
+      emojiInput.value = item.input
+    }
+  }
+})
 
 const codePoints = computed<CodePoint[]>(() => {
   const text = activeTab.value === 'convert' ? inputText.value : emojiInput.value
@@ -39,62 +62,25 @@ const emojiList = computed(() => {
 })
 
 function handleToUnicode() {
-  try {
-    outputText.value = textToUnicode(inputText.value, unicodeFormat.value)
-    addHistory('unicode', inputText.value, outputText.value, {
+  runAction(() => {
+    const result = textToUnicode(inputText.value, unicodeFormat.value)
+    outputText.value = result
+    addHistory(inputText.value, outputText.value, {
       mode: 'toUnicode',
       format: unicodeFormat.value
     })
-  } catch (e: any) {
-    error(e.message)
-  }
+  })
 }
 
 function handleToText() {
-  try {
-    outputText.value = unicodeToText(inputText.value)
-    addHistory('unicode', inputText.value, outputText.value, {
+  runAction(() => {
+    const result = unicodeToText(inputText.value)
+    outputText.value = result
+    addHistory(inputText.value, outputText.value, {
       mode: 'toText'
     })
-  } catch (e: any) {
-    error(e.message)
-  }
+  })
 }
-
-function handleClear() {
-  inputText.value = ''
-  outputText.value = ''
-  emojiInput.value = ''
-}
-
-function handleSwap() {
-  const temp = inputText.value
-  inputText.value = outputText.value
-  outputText.value = temp
-}
-
-function handleCopy() {
-  if (outputText.value) {
-    copy(outputText.value)
-  }
-}
-
-function handleRestore(item: any) {
-  inputText.value = item.input || ''
-  outputText.value = item.output || ''
-  if (item.options?.format) {
-    unicodeFormat.value = item.options.format
-  }
-  if (item.input) {
-    emojiInput.value = item.input
-  }
-}
-
-useKeyboardShortcuts({
-  onCopy: handleCopy,
-  onSwap: handleSwap,
-  onClear: handleClear
-})
 </script>
 
 <template>

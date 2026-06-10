@@ -18,7 +18,7 @@ import { Clock } from 'lucide-vue-next'
 
 const { t } = useI18n()
 const { copy } = useClipboard()
-const { error } = useToast()
+const { error: toastError, success } = useToast()
 const { addHistory } = useHistory()
 
 const inputToken = ref('')
@@ -28,7 +28,7 @@ type JwtTab = 'payload' | 'header'
 const activeTab = useToolTab<JwtTab>('payload')
 const historyVisible = ref(false)
 
-function handleParse() {
+function parseInternal(showToast: boolean = false) {
   try {
     parseError.value = ''
     parsedJwt.value = parseJwt(inputToken.value)
@@ -40,7 +40,16 @@ function handleParse() {
   } catch (e: any) {
     parseError.value = e.message
     parsedJwt.value = null
-    error(e.message)
+    if (showToast) {
+      toastError(e.message)
+    }
+  }
+}
+
+function handleParse() {
+  parseInternal(true)
+  if (parsedJwt.value) {
+    success('解析成功')
   }
 }
 
@@ -53,7 +62,7 @@ function handleClear() {
 function handleRestore(item: HistoryItem) {
   inputToken.value = item.input || ''
   if (inputToken.value.trim()) {
-    handleParse()
+    parseInternal(false)
   }
 }
 
@@ -66,7 +75,6 @@ function handleJwtCopy() {
 }
 
 function handleJwtSwap() {
-  // JWT 不适用交换功能
 }
 
 useKeyboardShortcuts({
@@ -78,12 +86,14 @@ useKeyboardShortcuts({
 function copyHeader() {
   if (parsedJwt.value) {
     copy(parsedJwt.value.headerJson)
+    success('已复制 Header')
   }
 }
 
 function copyPayload() {
   if (parsedJwt.value) {
     copy(parsedJwt.value.payloadJson)
+    success('已复制 Payload')
   }
 }
 
@@ -104,7 +114,7 @@ const nbfTime = computed(() => {
 
 watch(inputToken, () => {
   if (inputToken.value.trim()) {
-    handleParse()
+    parseInternal(false)
   } else {
     parsedJwt.value = null
     parseError.value = ''

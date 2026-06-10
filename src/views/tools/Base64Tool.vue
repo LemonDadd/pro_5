@@ -11,25 +11,16 @@ import Badge from '@/components/ui/Badge.vue'
 import CodeEditor from '@/components/editor/CodeEditor.vue'
 import ToolWorkspace from '@/components/workspace/ToolWorkspace.vue'
 import { encodeBase64, decodeBase64, looksLikeBase64, fileToBase64, base64ToBlob } from '@/tools/modules/base64'
-import { useClipboard } from '@/composables/useClipboard'
-import { useToast } from '@/composables/useToast'
-import { useHistory } from '@/composables/useHistory'
 import { formatBytes } from '@/utils/string'
 import { useToolTab } from '@/composables/useToolTab'
-import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
+import { useToolIO, type HistoryItem } from '@/composables/useToolIO'
 
 const { t } = useI18n()
-const { copy } = useClipboard()
-const { error, success } = useToast()
-const { addHistory } = useHistory()
 
 type Base64Mode = 'text' | 'file'
 const mode = useToolTab<Base64Mode>('text')
-const inputText = ref('')
-const outputText = ref('')
 const urlSafe = ref(false)
 const mimeWrap = ref(false)
-const errorMessage = ref('')
 const showAutoDetect = ref(false)
 
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -37,61 +28,71 @@ const selectedFile = ref<File | null>(null)
 const fileBase64 = ref('')
 const isDragOver = ref(false)
 
+const {
+  inputText,
+  outputText,
+  errorMessage,
+  handleClear,
+  handleSwap,
+  handleCopy,
+  handleRestore,
+  addHistory,
+  setError,
+  clearError,
+  success,
+  copy
+} = useToolIO({
+  toolId: 'base64',
+  onClear: () => {
+    showAutoDetect.value = false
+    selectedFile.value = null
+    fileBase64.value = ''
+  },
+  onSwap: () => {
+    checkAutoDetect()
+  },
+  onRestore: (item: HistoryItem) => {
+    if (item.options) {
+      if (typeof item.options.urlSafe === 'boolean') {
+        urlSafe.value = item.options.urlSafe
+      }
+      if (typeof item.options.mimeWrap === 'boolean') {
+        mimeWrap.value = item.options.mimeWrap
+      }
+    }
+  }
+})
+
 function handleEncode() {
   try {
-    errorMessage.value = ''
+    clearError()
     outputText.value = encodeBase64(inputText.value, {
       urlSafe: urlSafe.value,
       mimeWrap: mimeWrap.value
     })
-    addHistory('base64', inputText.value, outputText.value, {
+    addHistory(inputText.value, outputText.value, {
       mode: 'encode',
       urlSafe: urlSafe.value,
       mimeWrap: mimeWrap.value
     })
   } catch (e: any) {
-    errorMessage.value = e.message
-    error(e.message)
+    setError(e.message)
   }
 }
 
 function handleDecode() {
   try {
-    errorMessage.value = ''
+    clearError()
     outputText.value = decodeBase64(inputText.value, {
       urlSafe: urlSafe.value
     })
     showAutoDetect.value = false
-    addHistory('base64', inputText.value, outputText.value, {
+    addHistory(inputText.value, outputText.value, {
       mode: 'decode',
       urlSafe: urlSafe.value
     })
   } catch (e: any) {
-    errorMessage.value = e.message
-    error(e.message)
-  }
-}
-
-function handleClear() {
-  inputText.value = ''
-  outputText.value = ''
-  errorMessage.value = ''
-  showAutoDetect.value = false
-  selectedFile.value = null
-  fileBase64.value = ''
-}
-
-function handleSwap() {
-  const temp = inputText.value
-  inputText.value = outputText.value
-  outputText.value = temp
-  errorMessage.value = ''
-  checkAutoDetect()
-}
-
-function handleCopy() {
-  if (outputText.value) {
-    copy(outputText.value)
+    setError(e.message)
   }
 }
 
@@ -105,7 +106,7 @@ function checkAutoDetect() {
 
 watch(inputText, () => {
   checkAutoDetect()
-  errorMessage.value = ''
+  clearError()
 })
 
 function handleFileSelect(e: Event) {
@@ -136,7 +137,7 @@ function handleDragLeave() {
 
 async function processFile(file: File) {
   if (file.size > 5 * 1024 * 1024) {
-    error('文件大小不能超过 5MB')
+    setError('文件大小不能超过 5MB')
     return
   }
   selectedFile.value = file
@@ -144,7 +145,7 @@ async function processFile(file: File) {
     fileBase64.value = await fileToBase64(file)
     success('文件编码成功')
   } catch (e: any) {
-    error(e.message || '文件编码失败')
+    setError(e.message || '文件编码失败')
   }
 }
 
@@ -162,7 +163,7 @@ function downloadDecodedFile() {
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
   } catch (e: any) {
-    error(e.message || '解码失败')
+    setError(e.message || '解码失败')
   }
 }
 
@@ -171,25 +172,6 @@ function copyFileBase64() {
     copy(fileBase64.value)
   }
 }
-
-function handleRestore(item: any) {
-  inputText.value = item.input || ''
-  outputText.value = item.output || ''
-  if (item.options) {
-    if (typeof item.options.urlSafe === 'boolean') {
-      urlSafe.value = item.options.urlSafe
-    }
-    if (typeof item.options.mimeWrap === 'boolean') {
-      mimeWrap.value = item.options.mimeWrap
-    }
-  }
-}
-
-useKeyboardShortcuts({
-  onCopy: handleCopy,
-  onSwap: handleSwap,
-  onClear: handleClear
-})
 </script>
 
 <template>

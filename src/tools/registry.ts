@@ -1,4 +1,4 @@
-import { defineTool } from './types'
+import { defineTool, type ToolCategory } from './types'
 import Base64Tool from '@/views/tools/Base64Tool.vue'
 import UrlTool from '@/views/tools/UrlTool.vue'
 import HtmlEntityTool from '@/views/tools/HtmlEntityTool.vue'
@@ -9,6 +9,36 @@ import TimestampTool from '@/views/tools/TimestampTool.vue'
 import CronTool from '@/views/tools/CronTool.vue'
 import UuidTool from '@/views/tools/UuidTool.vue'
 import RandomStringTool from '@/views/tools/RandomStringTool.vue'
+
+export interface CategoryConfig {
+  id: ToolCategory
+  defaultExpanded: boolean
+  order: number
+}
+
+const CATEGORY_CONFIGS: CategoryConfig[] = [
+  { id: 'encode', defaultExpanded: true, order: 1 },
+  { id: 'convert', defaultExpanded: true, order: 2 },
+  { id: 'format', defaultExpanded: true, order: 3 },
+  { id: 'crypto', defaultExpanded: true, order: 4 },
+  { id: 'time', defaultExpanded: true, order: 5 }
+]
+
+export function getCategoryConfigs(): CategoryConfig[] {
+  return [...CATEGORY_CONFIGS].sort((a, b) => a.order - b.order)
+}
+
+export function getDefaultCategoryExpanded(): Record<string, boolean> {
+  const result: Record<string, boolean> = {}
+  for (const cfg of CATEGORY_CONFIGS) {
+    result[cfg.id] = cfg.defaultExpanded
+  }
+  return result
+}
+
+export function getCategoryDisplayOrder(): ToolCategory[] {
+  return getCategoryConfigs().map(c => c.id)
+}
 
 const tools = [
   defineTool({
